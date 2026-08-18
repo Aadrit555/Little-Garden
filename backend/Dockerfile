@@ -39,4 +39,4 @@ COPY . .
 EXPOSE 8000
 
 # gunicorn + uvicorn workers for real production serving, not --reload dev server
-CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "180"]
+CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "180"]
