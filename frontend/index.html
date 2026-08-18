@@ -14,7 +14,7 @@
 <div id="app"></div>
 </main>
 <script>
-const API=window.location.protocol==="file:"?"http://127.0.0.1:8000":window.location.origin;
+const API = "https://little-garden-jd1b.onrender.com";
 const app=document.getElementById("app");
 const SKILLS=["listening","speaking","reading","writing"];
 function learner(){try{const v=localStorage.getItem("german_mvp_learner");return v?JSON.parse(v):null}catch{return null}}

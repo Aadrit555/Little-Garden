@@ -1,0 +1,48 @@
+# Real deployment stack: Postgres + backend API.
+# Ollama is NOT containerized here on purpose — it needs GPU passthrough
+# for real performance, which varies a lot by host (NVIDIA Container
+# Toolkit setup etc). Simplest real path: run Ollama directly on the
+# host machine (as you already do), and the backend container reaches
+# it via host.docker.internal. If you deploy to a cloud GPU box, run
+# `ollama serve` there directly (not in Docker) and point OLLAMA_URL
+# at it, or containerize Ollama yourself with proper GPU device mapping.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: german_mvp
+      POSTGRES_USER: german_mvp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U german_mvp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://german_mvp:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/german_mvp
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434/api/chat}
+      LOCAL_LLM_MODEL: ${LOCAL_LLM_MODEL:-llama3.1:8b-instruct-q4_K_M}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:?set ALLOWED_ORIGINS in .env, e.g. https://yourdomain.com}
+      API_KEY: ${API_KEY:?set API_KEY in .env — required for any deployment reachable outside localhost}
+      UPLOAD_DIR: /data/uploads
+      ALIGN_DIR: /data/alignments
+    volumes:
+      - audio_data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  pgdata:
+  audio_data:
