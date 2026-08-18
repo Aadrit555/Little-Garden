@@ -232,4 +232,4 @@ trusted beta group (e.g. friends testing it), not fine for an open
 public signup product — that needs real per-learner auth (password
 hashing + sessions, or an OAuth provider) as the next real milestone
 before wider launch.
-# Dressrosa
+# LITTLE-GARDEN
