@@ -1,0 +1,48 @@
+client_id	audio_id	audio_file	duration_ms	prompt_id	prompt	reason	comment	language
+0abdb8c04390a61ac23a4fcfa3619071	71035	spontaneous-speech-de-71035.mp3	25704	7523	Welche Art von Musikinstrument möchtest du gerne spielen können und warum?	other	Funktioniert nicht.	German
+c965a49b306662f8846ca98a0e42f9e7	72272	spontaneous-speech-de-72272.mp3	4068	7519	Welche Sprache würdest du gerne lernen und warum?	other		German
+51845105f8c70db59acd7508d250fb87	72695	spontaneous-speech-de-72695.mp3	25128	8588	Magst du lieber den Herbst oder den Frühling, und warum ist das so?	different_language		German
+c5bfef2b58c8be672d457214d7def2bb	71274	spontaneous-speech-de-71274.mp3	95112	7546	Wie siehst du die Zukunft der Bildung?	other	too long	German
+360324e7166f771b74ff74ffa92296ce	91341	spontaneous-speech-de-91341.mp3	63216	7514	Wie ändert die Nutzung von KI die Gesellschaft?	other	too long	German
+51845105f8c70db59acd7508d250fb87	74861	spontaneous-speech-de-74861.mp3	66276	7544	Was tust du im Alltag, um die Umwelt zu schützen?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71037	spontaneous-speech-de-71037.mp3	7452	7535	Wenn du eine Milliarde Euro hättest, was würdest du damit machen?	different_language	empty	German
+767c7493681bfee92477f38d77315871	79419	spontaneous-speech-de-79419.mp3	39096	8731	Hat dir jemand Kochen beigebracht, und wenn ja, wer?	other	too long	German
+6e19c5438076b89950ea686f9d33893e	78305	spontaneous-speech-de-78305.mp3	41796	7551	Welche gesellschaftlichen Veränderungen würdest du gerne sehen?	other	too long	German
+c5bfef2b58c8be672d457214d7def2bb	71264	spontaneous-speech-de-71264.mp3	40464	7531	Wie bleibst du motiviert, wenn du auf Hindernisse stößt?	other	too long	German
+c5bfef2b58c8be672d457214d7def2bb	71271	spontaneous-speech-de-71271.mp3	38016	7532	Was ist für dich das Wichtigste in einer Beziehung?	other	too long	German
+51845105f8c70db59acd7508d250fb87	74857	spontaneous-speech-de-74857.mp3	39204	8883	Welches Hobby ist deiner Meinung nach Zeitverschwendung?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71042	spontaneous-speech-de-71042.mp3	52236	7522	Welche Art von Kleidung trägst du am liebsten und warum?	different_language	empty	German
+0abdb8c04390a61ac23a4fcfa3619071	71034	spontaneous-speech-de-71034.mp3	16560	7533	Welche Traditionen pflegst du in deiner Familie?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71262	spontaneous-speech-de-71262.mp3	160704	7514	Wie ändert die Nutzung von KI die Gesellschaft?	other	too long	German
+afb8ea5f4b1d1779300a9cfea9966f0d	72013	spontaneous-speech-de-72013.mp3	19692	7524	Welche Art von Sport würdest du gerne einmal ausprobieren und warum?	different_language	empty	German
+0abdb8c04390a61ac23a4fcfa3619071	71044	spontaneous-speech-de-71044.mp3	23112	7498	Was ist dein Lieblingsfilm und warum?	different_language	empty	German
+9778b14c72923e8c197447dcfb09f0e1	78449	spontaneous-speech-de-78449.mp3	43308	7496	Liest du gerne Bücher und wenn ja, welche?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71035	spontaneous-speech-de-71035.mp3	25704	7523	Welche Art von Musikinstrument möchtest du gerne spielen können und warum?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71273	spontaneous-speech-de-71273.mp3	47052	7549	Was denkst du über die aktuelle Debatte um Datenschutz?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71040	spontaneous-speech-de-71040.mp3	23436	7528	Wenn du eine Zeitmaschine hättest, in welche Zeit würdest du reisen und warum?	different_language	empty	German
+0abdb8c04390a61ac23a4fcfa3619071	71039	spontaneous-speech-de-71039.mp3	65736	7538	Wenn du die Welt verändern könntest, was würdest du als erstes tun?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71268	spontaneous-speech-de-71268.mp3	62244	7551	Welche gesellschaftlichen Veränderungen würdest du gerne sehen?	other	too long	German
+767c7493681bfee92477f38d77315871	79426	spontaneous-speech-de-79426.mp3	41508	7517	Was findest du, denkt die Gesellschaft über den Klimawandel?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71032	spontaneous-speech-de-71032.mp3	25776	7536	Wenn du ein Tier wärst, welches wärst du und warum?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71265	spontaneous-speech-de-71265.mp3	69408	7516	Warum ist es wichtig, verschiedene Hobbys zu haben?	other	too long	German
+c965a49b306662f8846ca98a0e42f9e7	72266	spontaneous-speech-de-72266.mp3	3096	7499	Was ist dein Lieblingsgetränk und warum?	other	indefinable	German
+0abdb8c04390a61ac23a4fcfa3619071	71041	spontaneous-speech-de-71041.mp3	44892	7501	Welches Tier magst du am meisten und warum?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71260	spontaneous-speech-de-71260.mp3	48276	7513	Welchen Sport machst du am liebsten und warum?	other	too long	German
+c5bfef2b58c8be672d457214d7def2bb	71257	spontaneous-speech-de-71257.mp3	69876	7544	Was tust du im Alltag, um die Umwelt zu schützen?	other	too long	German
+6e19c5438076b89950ea686f9d33893e	78297	spontaneous-speech-de-78297.mp3	140976	7544	Was tust du im Alltag, um die Umwelt zu schützen?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71033	spontaneous-speech-de-71033.mp3	29376	7549	Was denkst du über die aktuelle Debatte um Datenschutz?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71255	spontaneous-speech-de-71255.mp3	44820	7501	Welches Tier magst du am meisten und warum?	other	too long	German
+767c7493681bfee92477f38d77315871	79410	spontaneous-speech-de-79410.mp3	37620	9273	Haben Sie eine Meinung zum Tragen von Schuluniformen?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71031	spontaneous-speech-de-71031.mp3	5796	7495	Welche Jahreszeit magst du am liebsten und warum?	different_language	empty	German
+b6d3a166e0be3dcec6dd43459b788100	80840	spontaneous-speech-de-80840.mp3	38952	7542	Was war dein bisher größter beruflicher Erfolg?	other	too long	German
+afb8ea5f4b1d1779300a9cfea9966f0d	72012	spontaneous-speech-de-72012.mp3	24840	7526	Welche Art von Unterkünften bevorzugst du beim Reisen (Hotel, Airbnb, Camping etc.) und warum?	different_language	Empty	German
+c5bfef2b58c8be672d457214d7def2bb	71253	spontaneous-speech-de-71253.mp3	54972	7517	Was findest du, denkt die Gesellschaft über den Klimawandel?	other	too long	German
+07e55c6bd33b109ed13665d95d8b4a9c	75000	spontaneous-speech-de-75000.mp3	58032	7534	Wenn du für einen Tag unsichtbar wärst, was würdest du tun?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71036	spontaneous-speech-de-71036.mp3	3024	7500	Welche Sportart schaust du am liebsten und warum?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71272	spontaneous-speech-de-71272.mp3	43812	7547	Welche Fähigkeiten sollten deiner Meinung nach in der Schule mehr gefördert werden?	other	too long	German
+c5bfef2b58c8be672d457214d7def2bb	71263	spontaneous-speech-de-71263.mp3	44964	7550	Wie wichtig ist dir politische Beteiligung?	other	too long	German
+0abdb8c04390a61ac23a4fcfa3619071	71038	spontaneous-speech-de-71038.mp3	19548	7551	Welche gesellschaftlichen Veränderungen würdest du gerne sehen?	different_language	empty	German
+ece72fb13e137eac65f6306f43c4c21d	91384	spontaneous-speech-de-91384.mp3	9360	7505	Welche Art von Filmen magst du und warum?	different_language	empty	German
+c5bfef2b58c8be672d457214d7def2bb	71266	spontaneous-speech-de-71266.mp3	48240	7519	Welche Sprache würdest du gerne lernen und warum?	other	too long	German
+c965a49b306662f8846ca98a0e42f9e7	72266	spontaneous-speech-de-72266.mp3	3096	7499	Was ist dein Lieblingsgetränk und warum?	different_language		German
+51845105f8c70db59acd7508d250fb87	72691	spontaneous-speech-de-72691.mp3	22284	7505	Welche Art von Filmen magst du und warum?	different_language	Luxembourgisch? Jedenfalls kein Deutsch das ich schreiben kann	German

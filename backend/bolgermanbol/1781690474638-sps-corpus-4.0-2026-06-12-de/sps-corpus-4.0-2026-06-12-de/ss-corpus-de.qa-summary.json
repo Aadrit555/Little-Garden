@@ -1,0 +1,14 @@
+{
+  "locale": "de",
+  "initial_rows": 319,
+  "disfluency_applied": false,
+  "disfluency_affected_rows": 0,
+  "splitting_applied": true,
+  "splitting_warnings": [
+    "Dataset has only 65 audio clips, which is less than the minimum of 300 required to create splits."
+  ],
+  "quality_tagging_applied": true,
+  "problem_clips": [],
+  "problem_clip_count": 2,
+  "final_rows": 319
+}
