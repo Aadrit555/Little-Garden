@@ -1,88 +1,482 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>German Learning</title>
-<style>
-:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#111;color:#eee}body{margin:0;background:#111}main{max-width:980px;margin:0 auto;padding:32px 20px 60px}button,input,textarea,select{box-sizing:border-box;width:100%;padding:11px;margin:7px 0;font:inherit}button{cursor:pointer;border:0;background:#2f6fed;color:#fff}button.secondary{background:#333}button.danger{background:#8f3030}button:disabled{opacity:.55;cursor:not-allowed}input,textarea,select{background:#1c1c1c;color:#eee;border:1px solid #444}textarea{min-height:130px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.card{background:#191919;border:1px solid #333;padding:18px}.clickable{cursor:pointer}.content{white-space:pre-wrap;background:#191919;border:1px solid #333;padding:18px;margin:14px 0}.muted{color:#aaa}.error{color:#ff7777;white-space:pre-wrap}.ok{color:#7ee787;white-space:pre-wrap}.result{margin-top:18px;padding:20px;background:#191919;border:1px solid #333;border-radius:8px}.result-good{border-color:#2d5a3d}.result-mid{border-color:#5a4d2d}.result-low{border-color:#5a2d2d}.result-hero{display:flex;align-items:center;gap:18px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid #2a2a2a}.score{font-size:44px;font-weight:700;line-height:1;min-width:88px;text-align:center;padding:10px 14px;border-radius:10px;background:#222}.score-good{color:#7ee787;background:#152818}.score-mid{color:#f0c674;background:#2a2418}.score-low{color:#ff7777;background:#2a1818}.result-kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#888}.result-verdict{font-size:18px;font-weight:600;margin-top:2px}.result-summary{margin:0 0 14px;line-height:1.5}.result-section{margin-top:16px}.result-section h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#aaa;font-weight:600}.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.stat-row{margin-bottom:4px}.stat-head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}.stat-track{height:8px;background:#1c1c1c;border:1px solid #333;border-radius:999px;overflow:hidden}.stat-fill{height:100%;background:#2f6fed;border-radius:999px}.result-good .stat-fill{background:#3d8f5a}.result-mid .stat-fill{background:#c9a227}.result-low .stat-fill{background:#c94a4a}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{display:inline-block;padding:6px 10px;background:#222;border:1px solid #3a3a3a;border-radius:999px;font-size:14px}.transcript{margin:0;padding:14px;background:#151515;border:1px solid #2d2d2d;border-radius:6px;line-height:1.5}.cefr-badge{display:inline-block;margin-bottom:14px;padding:8px 12px;background:#222;border:1px solid #3a3a3a;border-radius:6px;font-weight:600}.result-list{margin:0;padding-left:18px;line-height:1.6}.ok-list li::marker{color:#7ee787}.qa-card{padding:14px;margin-bottom:10px;background:#151515;border:1px solid #2d2d2d;border-radius:6px;border-left:4px solid #444}.qa-ok{border-left-color:#7ee787}.qa-partial{border-left-color:#f0c674}.qa-miss{border-left-color:#ff7777}.qa-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;font-weight:600;font-size:14px}.qa-badge{font-weight:500;color:#aaa;font-size:13px}.correction{padding:12px;margin-bottom:10px;background:#151515;border:1px solid #2d2d2d;border-radius:6px}.correction-error{color:#ff9999;text-decoration:line-through;margin-bottom:4px}.correction-fix{color:#7ee787;margin-bottom:4px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}audio{width:100%;margin:10px 0}label{display:block;margin-top:14px;font-weight:600}pre{white-space:pre-wrap}.review-item{margin:14px 0;padding:16px;background:#151515;border:1px solid #333}.meter{height:8px;background:#1c1c1c;border:1px solid #333;margin:8px 0;overflow:hidden}.meter-bar{height:100%;width:0%;background:#2f6fed;transition:width .05s linear}.meter-bar.loud{background:#7ee787}@media(max-width:600px){main{padding:20px 14px 40px}.result-hero{flex-direction:column;align-items:flex-start}}
-</style>
-</head>
-<body>
-<main>
-<header><h1>German Learning</h1><p class="muted">Listening · Speaking · Reading · Writing</p></header>
-<div id="app"></div>
-</main>
-<script>
-const API = "https://little-garden-jd1b.onrender.com";
-const app=document.getElementById("app");
-const SKILLS=["listening","speaking","reading","writing"];
-function learner(){try{const v=localStorage.getItem("german_mvp_learner");return v?JSON.parse(v):null}catch{return null}}
-function setLearner(v){localStorage.setItem("german_mvp_learner",JSON.stringify(v))}
-function apiKey(){return localStorage.getItem("german_mvp_api_key")||""}
-function setApiKey(v){if(v)localStorage.setItem("german_mvp_api_key",v);else localStorage.removeItem("german_mvp_api_key")}
-function apiError(data,fallback){return data?.detail||fallback||JSON.stringify(data)}
-async function request(path,options={}){const headers={...(options.headers||{})};const k=apiKey();if(k)headers["X-API-Key"]=k;const r=await fetch(`${API}${path}`,{...options,headers});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(apiError(d,`HTTP ${r.status}`));return d}
-function navigate(v){location.hash=v;render()}
-addEventListener("hashchange",render)
-function esc(v){return String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]))}
-function scoreTone(score){const n=Number(score);if(n>=70)return"good";if(n>=40)return"mid";return"low"}
-function scoreLabel(score){const n=Number(score);if(n>=85)return"Excellent";if(n>=70)return"Good";if(n>=55)return"Fair";if(n>=40)return"Needs work";return"Keep practicing"}
-function statBar(label,value,max=1){const pct=Math.max(0,Math.min(100,Math.round((Number(value)/max)*100)));return`<div class="stat-row"><div class="stat-head"><span>${esc(label)}</span><span class="muted">${pct}%</span></div><div class="stat-track"><div class="stat-fill" style="width:${pct}%"></div></div></div>`}
-function chipList(items,empty){if(!items||!items.length)return`<p class="muted">${esc(empty)}</p>`;return`<div class="chips">${items.map(w=>`<span class="chip">${esc(w)}</span>`).join("")}</div>`}
-function renderResult(skill,data){const fb=data.feedback||{},tone=scoreTone(data.score);let body="";if(skill==="speaking"){body=`<div class="stat-grid">${statBar("Word match",fb.word_match_ratio)}${statBar("Timing",fb.timing_score)}</div>`;if(data.transcript)body+=`<div class="result-section"><h4>Your transcript</h4><p class="transcript">${esc(data.transcript)}</p></div>`;body+=`<div class="result-section"><h4>Words to practice</h4>${chipList(fb.missed_words,"Great — no missed words detected.")}</div>`}else if(skill==="listening"){if(fb.feedback)body+=`<p class="result-summary">${esc(fb.feedback)}</p>`;body+=`<div class="result-section"><h4>Missed parts</h4>${chipList(fb.missed_parts,"Nothing major missed.")}</div>`}else if(skill==="reading"){body=(fb.per_question||[]).map((q,i)=>`<div class="qa-card ${q.correct?"qa-ok":q.partial_credit>=0.5?"qa-partial":"qa-miss"}"><div class="qa-head"><span>Question ${i+1}</span><span class="qa-badge">${q.correct?"Correct":q.partial_credit>=0.5?"Partial":"Incorrect"} · ${Math.round(q.partial_credit*100)}%</span></div><p>${esc(q.feedback)}</p></div>`).join("")}else if(skill==="writing"){if(fb.cefr_estimate)body+=`<div class="cefr-badge">Estimated level: ${esc(fb.cefr_estimate)}</div>`;if(fb.strengths?.length)body+=`<div class="result-section"><h4>Strengths</h4><ul class="result-list ok-list">${fb.strengths.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>`;if(fb.grammar_errors?.length)body+=`<div class="result-section"><h4>Grammar corrections</h4>${fb.grammar_errors.map(e=>`<div class="correction"><div class="correction-error">${esc(e.error)}</div><div class="correction-fix">→ ${esc(e.correction)}</div><div class="muted">${esc(e.explanation)}</div></div>`).join("")}</div>`;if(fb.next_steps?.length)body+=`<div class="result-section"><h4>Next steps</h4><ul class="result-list">${fb.next_steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>`}return`<div class="result result-${tone}"><div class="result-hero"><div class="score score-${tone}">${esc(data.score)}</div><div><div class="result-kicker">Score</div><div class="result-verdict">${esc(scoreLabel(data.score))}</div></div></div>${body}</div>`}
-// Real-time mic level meter — genuine live analysis of the actual mic
-// stream via Web Audio API's AnalyserNode, not a fake/simulated animation.
-// Also does real silence detection: if the level stays below threshold
-// for silenceMs, calls onSilence() once (used for auto-stop).
-function attachLevelMeter(stream, meterBarEl, onSilence, silenceMs = 1800, silenceThreshold = 6) {
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AudioCtx();
-  const src = ctx.createMediaStreamSource(stream);
-  const analyser = ctx.createAnalyser();
-  analyser.fftSize = 512;
-  src.connect(analyser);
-  const data = new Uint8Array(analyser.frequencyBinCount);
-  let raf, silenceStart = null, fired = false;
-  function tick() {
-    analyser.getByteFrequencyData(data);
-    const avg = data.reduce((a, b) => a + b, 0) / data.length;
-    const pct = Math.min(100, Math.round((avg / 90) * 100));
-    if (meterBarEl) {
-      meterBarEl.style.width = pct + "%";
-      meterBarEl.className = "meter-bar" + (pct > 35 ? " loud" : "");
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>German Learning</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #eee
     }
-    if (onSilence && !fired) {
-      if (avg < silenceThreshold) {
-        if (silenceStart === null) silenceStart = performance.now();
-        else if (performance.now() - silenceStart > silenceMs) { fired = true; onSilence(); }
-      } else {
-        silenceStart = null;
+
+    body {
+      margin: 0;
+      background: #111
+    }
+
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 60px
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 11px;
+      margin: 7px 0;
+      font: inherit
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: #2f6fed;
+      color: #fff
+    }
+
+    button.secondary {
+      background: #333
+    }
+
+    button.danger {
+      background: #8f3030
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed
+    }
+
+    input,
+    textarea,
+    select {
+      background: #1c1c1c;
+      color: #eee;
+      border: 1px solid #444
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px
+    }
+
+    .card {
+      background: #191919;
+      border: 1px solid #333;
+      padding: 18px
+    }
+
+    .clickable {
+      cursor: pointer
+    }
+
+    .content {
+      white-space: pre-wrap;
+      background: #191919;
+      border: 1px solid #333;
+      padding: 18px;
+      margin: 14px 0
+    }
+
+    .muted {
+      color: #aaa
+    }
+
+    .error {
+      color: #ff7777;
+      white-space: pre-wrap
+    }
+
+    .ok {
+      color: #7ee787;
+      white-space: pre-wrap
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 20px;
+      background: #191919;
+      border: 1px solid #333;
+      border-radius: 8px
+    }
+
+    .result-good {
+      border-color: #2d5a3d
+    }
+
+    .result-mid {
+      border-color: #5a4d2d
+    }
+
+    .result-low {
+      border-color: #5a2d2d
+    }
+
+    .result-hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2a2a
+    }
+
+    .score {
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1;
+      min-width: 88px;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #222
+    }
+
+    .score-good {
+      color: #7ee787;
+      background: #152818
+    }
+
+    .score-mid {
+      color: #f0c674;
+      background: #2a2418
+    }
+
+    .score-low {
+      color: #ff7777;
+      background: #2a1818
+    }
+
+    .result-kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #888
+    }
+
+    .result-verdict {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 2px
+    }
+
+    .result-summary {
+      margin: 0 0 14px;
+      line-height: 1.5
+    }
+
+    .result-section {
+      margin-top: 16px
+    }
+
+    .result-section h4 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #aaa;
+      font-weight: 600
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px
+    }
+
+    .stat-row {
+      margin-bottom: 4px
+    }
+
+    .stat-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 6px
+    }
+
+    .stat-track {
+      height: 8px;
+      background: #1c1c1c;
+      border: 1px solid #333;
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .stat-fill {
+      height: 100%;
+      background: #2f6fed;
+      border-radius: 999px
+    }
+
+    .result-good .stat-fill {
+      background: #3d8f5a
+    }
+
+    .result-mid .stat-fill {
+      background: #c9a227
+    }
+
+    .result-low .stat-fill {
+      background: #c94a4a
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 6px 10px;
+      background: #222;
+      border: 1px solid #3a3a3a;
+      border-radius: 999px;
+      font-size: 14px
+    }
+
+    .transcript {
+      margin: 0;
+      padding: 14px;
+      background: #151515;
+      border: 1px solid #2d2d2d;
+      border-radius: 6px;
+      line-height: 1.5
+    }
+
+    .cefr-badge {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      background: #222;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      font-weight: 600
+    }
+
+    .result-list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.6
+    }
+
+    .ok-list li::marker {
+      color: #7ee787
+    }
+
+    .qa-card {
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #151515;
+      border: 1px solid #2d2d2d;
+      border-radius: 6px;
+      border-left: 4px solid #444
+    }
+
+    .qa-ok {
+      border-left-color: #7ee787
+    }
+
+    .qa-partial {
+      border-left-color: #f0c674
+    }
+
+    .qa-miss {
+      border-left-color: #ff7777
+    }
+
+    .qa-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px
+    }
+
+    .qa-badge {
+      font-weight: 500;
+      color: #aaa;
+      font-size: 13px
+    }
+
+    .correction {
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #151515;
+      border: 1px solid #2d2d2d;
+      border-radius: 6px
+    }
+
+    .correction-error {
+      color: #ff9999;
+      text-decoration: line-through;
+      margin-bottom: 4px
+    }
+
+    .correction-fix {
+      color: #7ee787;
+      margin-bottom: 4px
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .row>* {
+      flex: 1
+    }
+
+    audio {
+      width: 100%;
+      margin: 10px 0
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-weight: 600
+    }
+
+    pre {
+      white-space: pre-wrap
+    }
+
+    .review-item {
+      margin: 14px 0;
+      padding: 16px;
+      background: #151515;
+      border: 1px solid #333
+    }
+
+    .meter {
+      height: 8px;
+      background: #1c1c1c;
+      border: 1px solid #333;
+      margin: 8px 0;
+      overflow: hidden
+    }
+
+    .meter-bar {
+      height: 100%;
+      width: 0%;
+      background: #2f6fed;
+      transition: width .05s linear
+    }
+
+    .meter-bar.loud {
+      background: #7ee787
+    }
+
+    @media(max-width:600px) {
+      main {
+        padding: 20px 14px 40px
+      }
+
+      .result-hero {
+        flex-direction: column;
+        align-items: flex-start
       }
     }
-    raf = requestAnimationFrame(tick);
-  }
-  tick();
-  return () => { cancelAnimationFrame(raf); ctx.close(); };
-}
-async function validateLearner(current){try{return await request(`/learners/${current.id}`)}catch(e){if(e.message==="Learner not found"){localStorage.removeItem("german_mvp_learner");return null}throw e}}
-async function getAvailableLevels(skill){return request(`/content/available?skill=${encodeURIComponent(skill)}`)}
-async function getContent(skill,level){const d=await request(`/content/?skill=${encodeURIComponent(skill)}&level=${encodeURIComponent(level)}`);if(!d.length)throw new Error(`No approved ${skill} content available at ${level}.`);return d[Math.floor(Math.random()*d.length)]}
-async function getStatus(){return request("/content/status")}
-function back(){return `<button class="secondary" id="back">Back</button>`}
-function wireBack(){document.getElementById("back").onclick=()=>navigate("dashboard")}
-function provisioning(skill){if(skill==="reading"||skill==="writing")return "Generate local content, review it, then reload.";if(skill==="listening")return "Ingest real Deutsche Welle audio, local-Whisper transcript, review it, then reload.";return "Ingest a downloaded Common Voice German dataset, review clips, then reload."}
-async function render(){let current=learner();if(current){current=await validateLearner(current)}if(!current)return renderSetup();const view=(location.hash||"#dashboard").slice(1);if(view==="manager")return renderManager(current);if(SKILLS.includes(view))return renderSkill(view,current);return renderDashboard(current)}
-function renderSetup(){app.innerHTML=`<div class="card"><h2>Start learning</h2><label>Name</label><input id="name" autocomplete="name"><label>API key <span class="muted">(only if your backend requires one — leave blank for local dev)</span></label><input id="apikey" value="${esc(apiKey())}"><button id="start">Create learner</button><div id="status" class="muted"></div></div>`;document.getElementById("start").onclick=async()=>{const st=document.getElementById("status"),name=document.getElementById("name").value.trim();setApiKey(document.getElementById("apikey").value.trim());if(!name){st.className="error";st.textContent="Name cannot be empty.";return}try{const d=await request("/learners/",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({display_name:name})});setLearner({id:d.id,name:d.display_name});navigate("dashboard")}catch(e){st.className="error";st.textContent=e.message}}}
-async function renderDashboard(current){app.innerHTML=`<p class="muted">Loading...</p>`;try{const [profile,status]=await Promise.all([request(`/profile/${current.id}`),getStatus()]);const cards=SKILLS.map(skill=>{const b=profile.skill_breakdown[skill],c=status[skill];const score=b.status==="assessed"?`<div class="score">${esc(b.avg_score)}</div><div>${esc(b.latest_estimated_level||"")}</div><div class="muted">${esc(b.attempts)} attempts</div>`:`<div class="muted">Not assessed</div>`;return `<div class="card clickable" data-skill="${skill}"><h3>${skill[0].toUpperCase()+skill.slice(1)}</h3>${score}<div class="${c.approved?"ok":"error"}">${c.approved} approved</div><div class="muted">${c.pending} pending · ${c.rejected} rejected</div></div>`}).join("");app.innerHTML=`<p>Signed in as <strong>${esc(current.name)}</strong></p><div class="grid">${cards}</div><button class="secondary" id="manager">Content Manager</button><button class="secondary" id="switch">Switch learner</button><p class="muted">Learner sees approved database content only.</p>`;document.querySelectorAll("[data-skill]").forEach(x=>x.onclick=()=>navigate(x.dataset.skill));document.getElementById("manager").onclick=()=>navigate("manager");document.getElementById("switch").onclick=()=>{localStorage.removeItem("german_mvp_learner");render()}}catch(e){app.innerHTML=`<div class="error">${esc(e.message)}</div>`}}
-async function renderManager(current){app.innerHTML=`${back()}<h2>Content Manager</h2><p class="muted">Local-only content workflow. New material stays pending until reviewed.</p><div class="card"><h3>Generate Reading / Writing</h3><label>Skill</label><select id="genSkill"><option value="reading">Reading</option><option value="writing">Writing</option></select><label>CEFR level</label><select id="genLevel">${["A1","A2","B1","B2","C1","C2"].map(x=>`<option>${x}</option>`).join("")}</select><label>Count</label><input id="genCount" type="number" min="1" max="20" value="1"><button id="generate">Generate locally</button><div id="genStatus" class="muted"></div></div><div class="card"><h3>Listening ingestion</h3><p class="muted">Downloads real Deutsche Welle audio and creates transcript with local Whisper.</p><label>CEFR level used for review</label><select id="listenLevel">${["A1","A2","B1","B2","C1","C2"].map(x=>`<option>${x}</option>`).join("")}</select><label>Clips</label><input id="listenCount" type="number" min="1" max="20" value="1"><button id="ingestListening">Ingest listening</button><div id="listenStatus" class="muted"></div></div><div class="card"><h3>Speaking ingestion</h3><p class="muted">Uses real German Common Voice clips and sentence metadata from a downloaded dataset.</p><label>CEFR level used for review</label><select id="speakLevel">${["A1","A2","B1","B2","C1","C2"].map(x=>`<option>${x}</option>`).join("")}</select><label>Clips</label><input id="speakCount" type="number" min="1" max="20" value="1"><label>Dataset folder</label><input id="speakDir" placeholder="C:\\path\\to\\common-voice-german"><button id="ingestSpeaking">Ingest speaking</button><div id="speakStatus" class="muted"></div></div><h3>Pending review</h3><div id="pending">Loading...</div>`;wireBack();document.getElementById("generate").onclick=async()=>{const st=document.getElementById("genStatus");st.className="muted";st.textContent="Generating with local model...";try{const d=await request("/content/admin/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({skill:document.getElementById("genSkill").value,level:document.getElementById("genLevel").value,count:Number(document.getElementById("genCount").value)})});st.className="ok";st.textContent=`Created ${d.count} pending items.`;await loadPending()}catch(e){st.className="error";st.textContent=e.message}};document.getElementById("ingestListening").onclick=async()=>{const st=document.getElementById("listenStatus");st.className="muted";st.textContent="Downloading and transcribing...";try{const d=await request("/content/admin/ingest-listening",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({level:document.getElementById("listenLevel").value,limit:Number(document.getElementById("listenCount").value)})});st.className="ok";st.textContent=`Created ${d.count} pending items.`;await loadPending()}catch(e){st.className="error";st.textContent=e.message}};document.getElementById("ingestSpeaking").onclick=async()=>{const st=document.getElementById("speakStatus"),datasetDir=document.getElementById("speakDir").value.trim();if(!datasetDir){st.className="error";st.textContent="Dataset folder is required.";return}st.className="muted";st.textContent="Importing clips...";try{const d=await request("/content/admin/ingest-speaking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({level:document.getElementById("speakLevel").value,limit:Number(document.getElementById("speakCount").value),dataset_dir:datasetDir})});st.className="ok";st.textContent=`Created ${d.count} pending items.`;await loadPending()}catch(e){st.className="error";st.textContent=e.message}};async function loadPending(){const box=document.getElementById("pending");try{const rows=await request("/content/admin/pending");if(!rows.length){box.innerHTML=`<p class="muted">No pending content.</p>`;return}box.innerHTML=rows.map(item=>`<div class="review-item"><strong>ID ${item.id} · ${esc(item.skill)} · ${esc(item.level)}</strong><p>${esc(item.text_content||"")}</p>${item.audio_path?`<audio controls src="${esc(item.audio_path.startsWith("http")?item.audio_path:`${API}/content/admin/${item.id}/audio`)}"></audio>`:""}<p class="muted">Source: ${esc(item.source)}</p><div class="row"><button data-approve="${item.id}">Approve</button><button class="danger" data-reject="${item.id}">Reject</button></div></div>`).join("");box.querySelectorAll("[data-approve]").forEach(b=>b.onclick=()=>review(Number(b.dataset.approve),"approved"));box.querySelectorAll("[data-reject]").forEach(b=>b.onclick=()=>review(Number(b.dataset.reject),"rejected"))}catch(e){box.innerHTML=`<div class="error">${esc(e.message)}</div>`}}async function review(id,decision){try{await request(`/content/admin/${id}/review`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({decision})});await loadPending()}catch(e){alert(e.message)}}loadPending()}
-async function renderSkill(skill,current){app.innerHTML=`${back()}<h2>${skill[0].toUpperCase()+skill.slice(1)}</h2><p class="muted">Loading...</p>`;wireBack();try{const a=await getAvailableLevels(skill);if(!a.levels.length){app.innerHTML=`${back()}<h2>${skill}</h2><div class="card"><p>No approved content available.</p><p class="muted">${esc(provisioning(skill))}</p><p class="muted">Approved: ${a.approved_count}. Pending review: ${a.pending_count}.</p><button id="manager">Open Content Manager</button></div>`;wireBack();document.getElementById("manager").onclick=()=>navigate("manager");return}app.innerHTML=`${back()}<h2>${skill[0].toUpperCase()+skill.slice(1)}</h2><label>Level</label><select id="level">${a.levels.map(x=>`<option>${x}</option>`).join("")}</select><button id="load">Load approved content</button><div id="work"></div><div id="status" class="muted"></div><div id="result"></div>`;wireBack();document.getElementById("load").onclick=async()=>{const st=document.getElementById("status"),work=document.getElementById("work");st.className="muted";st.textContent="Loading approved content...";try{const c=await getContent(skill,document.getElementById("level").value);st.textContent="";if(skill==="writing")renderWriting(work,current,c);if(skill==="reading")renderReading(work,current,c);if(skill==="listening")renderListening(work,current,c);if(skill==="speaking")renderSpeaking(work,current,c)}catch(e){st.className="error";st.textContent=e.message}}}catch(e){app.innerHTML=`${back()}<div class="error">${esc(e.message)}</div>`;wireBack()}}
-function renderWriting(work,current,c){work.innerHTML=`<div class="content" id="prompt"></div><label>Your answer</label><textarea id="answer"></textarea><button class="secondary" id="dictate">Record dictation</button><div class="meter"><div class="meter-bar" id="dictateMeter"></div></div><label>Strictness</label><select id="strictness"><option value="lenient">Lenient</option><option value="standard" selected>Standard</option><option value="strict">Strict</option></select><button id="submit">Submit</button>`;document.getElementById("prompt").textContent=c.text_content;let recorder=null,chunks=[],stopMeter=null;document.getElementById("dictate").onclick=async function(){const b=this,st=document.getElementById("status");if(recorder){recorder.stop();return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);stopMeter=attachLevelMeter(stream,document.getElementById("dictateMeter"),()=>{if(recorder&&recorder.state==="recording")recorder.stop()});recorder.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());if(stopMeter){stopMeter();stopMeter=null}recorder=null;b.textContent="Record dictation";st.textContent="Transcribing locally...";const form=new FormData();form.append("audio_file",new Blob(chunks,{type:"audio/webm"}),"dictation.webm");try{const d=await request("/dictate/",{method:"POST",body:form});document.getElementById("answer").value=d.transcript;st.className="ok";st.textContent="Transcript inserted."}catch(e){st.className="error";st.textContent=e.message}};recorder.start();b.textContent="Stop recording";st.textContent="Recording... (auto-stops after ~1.8s of silence)"}catch(e){st.className="error";st.textContent=e.message}};document.getElementById("submit").onclick=async function(){const st=document.getElementById("status"),res=document.getElementById("result");this.disabled=true;st.textContent="Grading locally...";try{const d=await request("/writing/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({learner_id:current.id,content_item_id:c.id,text:document.getElementById("answer").value,strictness:document.getElementById("strictness").value})});res.innerHTML=renderResult("writing",d);st.textContent=""}catch(e){st.className="error";st.textContent=e.message}finally{this.disabled=false}}}
-function renderReading(work,current,c){work.innerHTML=`<div class="content" id="passage"></div><div id="questions"></div><button id="submit">Submit</button>`;document.getElementById("passage").textContent=c.text_content;document.getElementById("questions").innerHTML=c.questions.map((q,i)=>`<label>${esc(q)}</label><input id="q${i}">`).join("");document.getElementById("submit").onclick=async function(){const st=document.getElementById("status"),res=document.getElementById("result"),answers=c.questions.map((q,i)=>({question:q,learner_answer:document.getElementById(`q${i}`).value}));this.disabled=true;st.textContent="Grading locally...";try{const d=await request("/reading/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({learner_id:current.id,content_item_id:c.id,answers})});res.innerHTML=renderResult("reading",d);st.textContent=""}catch(e){st.className="error";st.textContent=e.message}finally{this.disabled=false}}}
-function audioSource(c){if(!c.audio_path)return null;return c.audio_path.startsWith("http")?c.audio_path:`${API}/content/${c.id}/audio`}
-function renderListening(work,current,c){const src=audioSource(c);if(!src){work.innerHTML=`<div class="error">Approved listening item has no audio.</div>`;return}work.innerHTML=`<audio controls src="${esc(src)}"></audio><label>What did you hear?</label><textarea id="answer"></textarea><button id="submit">Submit</button>`;document.getElementById("submit").onclick=async function(){const st=document.getElementById("status"),res=document.getElementById("result");this.disabled=true;st.textContent="Grading locally...";try{const d=await request("/listening/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({learner_id:current.id,content_item_id:c.id,typed_transcript:document.getElementById("answer").value})});res.innerHTML=renderResult("listening",d);st.textContent=""}catch(e){st.className="error";st.textContent=e.message}finally{this.disabled=false}}}
-function renderSpeaking(work,current,c){const src=audioSource(c);work.innerHTML=`<div class="content" id="prompt"></div>${src?`<audio controls src="${esc(src)}"></audio>`:""}<button id="record">Record</button><div class="meter"><div class="meter-bar" id="speakMeter"></div></div><audio id="playback" controls hidden></audio><button id="submit" disabled>Submit</button>`;document.getElementById("prompt").textContent=c.text_content;let recorder=null,chunks=[],blob=null,stopMeter=null;document.getElementById("record").onclick=async function(){const b=this,st=document.getElementById("status");if(recorder){recorder.stop();return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);stopMeter=attachLevelMeter(stream,document.getElementById("speakMeter"),()=>{if(recorder&&recorder.state==="recording")recorder.stop()});recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());if(stopMeter){stopMeter();stopMeter=null}recorder=null;blob=new Blob(chunks,{type:"audio/webm"});const p=document.getElementById("playback");p.src=URL.createObjectURL(blob);p.hidden=false;document.getElementById("submit").disabled=false;b.textContent="Record again";st.textContent="Recording ready."};recorder.start();b.textContent="Stop";st.textContent="Recording... (auto-stops after ~1.8s of silence)"}catch(e){st.className="error";st.textContent=e.message}};document.getElementById("submit").onclick=async function(){const st=document.getElementById("status"),res=document.getElementById("result");this.disabled=true;st.textContent="Transcribing and aligning locally...";try{const f=new FormData();f.append("learner_id",current.id);f.append("content_item_id",c.id);f.append("audio_file",blob,"speaking.webm");const d=await request("/speaking/submit",{method:"POST",body:f});res.innerHTML=renderResult("speaking",d);st.textContent=""}catch(e){st.className="error";st.textContent=e.message}finally{this.disabled=false}}}
-render();
-</script>
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>German Learning</h1>
+      <p class="muted">Listening · Speaking · Reading · Writing</p>
+    </header>
+    <div id="app"></div>
+  </main>
+  <script>
+    const API = "https://little-garden-production.up.railway.app";
+    const app = document.getElementById("app");
+    const SKILLS = ["listening", "speaking", "reading", "writing"];
+    function learner() { try { const v = localStorage.getItem("german_mvp_learner"); return v ? JSON.parse(v) : null } catch { return null } }
+    function setLearner(v) { localStorage.setItem("german_mvp_learner", JSON.stringify(v)) }
+    function apiKey() { return localStorage.getItem("german_mvp_api_key") || "" }
+    function setApiKey(v) { if (v) localStorage.setItem("german_mvp_api_key", v); else localStorage.removeItem("german_mvp_api_key") }
+    function apiError(data, fallback) { return data?.detail || fallback || JSON.stringify(data) }
+    async function request(path, options = {}) { const headers = { ...(options.headers || {}) }; const k = apiKey(); if (k) headers["X-API-Key"] = k; const r = await fetch(`${API}${path}`, { ...options, headers }); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(apiError(d, `HTTP ${r.status}`)); return d }
+    function navigate(v) { location.hash = v; render() }
+    addEventListener("hashchange", render)
+    function esc(v) { return String(v ?? "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;" }[c])) }
+    function scoreTone(score) { const n = Number(score); if (n >= 70) return "good"; if (n >= 40) return "mid"; return "low" }
+    function scoreLabel(score) { const n = Number(score); if (n >= 85) return "Excellent"; if (n >= 70) return "Good"; if (n >= 55) return "Fair"; if (n >= 40) return "Needs work"; return "Keep practicing" }
+    function statBar(label, value, max = 1) { const pct = Math.max(0, Math.min(100, Math.round((Number(value) / max) * 100))); return `<div class="stat-row"><div class="stat-head"><span>${esc(label)}</span><span class="muted">${pct}%</span></div><div class="stat-track"><div class="stat-fill" style="width:${pct}%"></div></div></div>` }
+    function chipList(items, empty) { if (!items || !items.length) return `<p class="muted">${esc(empty)}</p>`; return `<div class="chips">${items.map(w => `<span class="chip">${esc(w)}</span>`).join("")}</div>` }
+    function renderResult(skill, data) { const fb = data.feedback || {}, tone = scoreTone(data.score); let body = ""; if (skill === "speaking") { body = `<div class="stat-grid">${statBar("Word match", fb.word_match_ratio)}${statBar("Timing", fb.timing_score)}</div>`; if (data.transcript) body += `<div class="result-section"><h4>Your transcript</h4><p class="transcript">${esc(data.transcript)}</p></div>`; body += `<div class="result-section"><h4>Words to practice</h4>${chipList(fb.missed_words, "Great — no missed words detected.")}</div>` } else if (skill === "listening") { if (fb.feedback) body += `<p class="result-summary">${esc(fb.feedback)}</p>`; body += `<div class="result-section"><h4>Missed parts</h4>${chipList(fb.missed_parts, "Nothing major missed.")}</div>` } else if (skill === "reading") { body = (fb.per_question || []).map((q, i) => `<div class="qa-card ${q.correct ? "qa-ok" : q.partial_credit >= 0.5 ? "qa-partial" : "qa-miss"}"><div class="qa-head"><span>Question ${i + 1}</span><span class="qa-badge">${q.correct ? "Correct" : q.partial_credit >= 0.5 ? "Partial" : "Incorrect"} · ${Math.round(q.partial_credit * 100)}%</span></div><p>${esc(q.feedback)}</p></div>`).join("") } else if (skill === "writing") { if (fb.cefr_estimate) body += `<div class="cefr-badge">Estimated level: ${esc(fb.cefr_estimate)}</div>`; if (fb.strengths?.length) body += `<div class="result-section"><h4>Strengths</h4><ul class="result-list ok-list">${fb.strengths.map(s => `<li>${esc(s)}</li>`).join("")}</ul></div>`; if (fb.grammar_errors?.length) body += `<div class="result-section"><h4>Grammar corrections</h4>${fb.grammar_errors.map(e => `<div class="correction"><div class="correction-error">${esc(e.error)}</div><div class="correction-fix">→ ${esc(e.correction)}</div><div class="muted">${esc(e.explanation)}</div></div>`).join("")}</div>`; if (fb.next_steps?.length) body += `<div class="result-section"><h4>Next steps</h4><ul class="result-list">${fb.next_steps.map(s => `<li>${esc(s)}</li>`).join("")}</ul></div>` } return `<div class="result result-${tone}"><div class="result-hero"><div class="score score-${tone}">${esc(data.score)}</div><div><div class="result-kicker">Score</div><div class="result-verdict">${esc(scoreLabel(data.score))}</div></div></div>${body}</div>` }
+    // Real-time mic level meter — genuine live analysis of the actual mic
+    // stream via Web Audio API's AnalyserNode, not a fake/simulated animation.
+    // Also does real silence detection: if the level stays below threshold
+    // for silenceMs, calls onSilence() once (used for auto-stop).
+    function attachLevelMeter(stream, meterBarEl, onSilence, silenceMs = 1800, silenceThreshold = 6) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioCtx();
+      const src = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      src.connect(analyser);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      let raf, silenceStart = null, fired = false;
+      function tick() {
+        analyser.getByteFrequencyData(data);
+        const avg = data.reduce((a, b) => a + b, 0) / data.length;
+        const pct = Math.min(100, Math.round((avg / 90) * 100));
+        if (meterBarEl) {
+          meterBarEl.style.width = pct + "%";
+          meterBarEl.className = "meter-bar" + (pct > 35 ? " loud" : "");
+        }
+        if (onSilence && !fired) {
+          if (avg < silenceThreshold) {
+            if (silenceStart === null) silenceStart = performance.now();
+            else if (performance.now() - silenceStart > silenceMs) { fired = true; onSilence(); }
+          } else {
+            silenceStart = null;
+          }
+        }
+        raf = requestAnimationFrame(tick);
+      }
+      tick();
+      return () => { cancelAnimationFrame(raf); ctx.close(); };
+    }
+    async function validateLearner(current) { try { return await request(`/learners/${current.id}`) } catch (e) { if (e.message === "Learner not found") { localStorage.removeItem("german_mvp_learner"); return null } throw e } }
+    async function getAvailableLevels(skill) { return request(`/content/available?skill=${encodeURIComponent(skill)}`) }
+    async function getContent(skill, level) { const d = await request(`/content/?skill=${encodeURIComponent(skill)}&level=${encodeURIComponent(level)}`); if (!d.length) throw new Error(`No approved ${skill} content available at ${level}.`); return d[Math.floor(Math.random() * d.length)] }
+    async function getStatus() { return request("/content/status") }
+    function back() { return `<button class="secondary" id="back">Back</button>` }
+    function wireBack() { document.getElementById("back").onclick = () => navigate("dashboard") }
+    function provisioning(skill) { if (skill === "reading" || skill === "writing") return "Generate local content, review it, then reload."; if (skill === "listening") return "Ingest real Deutsche Welle audio, local-Whisper transcript, review it, then reload."; return "Ingest a downloaded Common Voice German dataset, review clips, then reload." }
+    async function render() { let current = learner(); if (current) { current = await validateLearner(current) } if (!current) return renderSetup(); const view = (location.hash || "#dashboard").slice(1); if (view === "manager") return renderManager(current); if (SKILLS.includes(view)) return renderSkill(view, current); return renderDashboard(current) }
+    function renderSetup() { app.innerHTML = `<div class="card"><h2>Start learning</h2><label>Name</label><input id="name" autocomplete="name"><label>API key <span class="muted">(only if your backend requires one — leave blank for local dev)</span></label><input id="apikey" value="${esc(apiKey())}"><button id="start">Create learner</button><div id="status" class="muted"></div></div>`; document.getElementById("start").onclick = async () => { const st = document.getElementById("status"), name = document.getElementById("name").value.trim(); setApiKey(document.getElementById("apikey").value.trim()); if (!name) { st.className = "error"; st.textContent = "Name cannot be empty."; return } try { const d = await request("/learners/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ display_name: name }) }); setLearner({ id: d.id, name: d.display_name }); navigate("dashboard") } catch (e) { st.className = "error"; st.textContent = e.message } } }
+    async function renderDashboard(current) { app.innerHTML = `<p class="muted">Loading...</p>`; try { const [profile, status] = await Promise.all([request(`/profile/${current.id}`), getStatus()]); const cards = SKILLS.map(skill => { const b = profile.skill_breakdown[skill], c = status[skill]; const score = b.status === "assessed" ? `<div class="score">${esc(b.avg_score)}</div><div>${esc(b.latest_estimated_level || "")}</div><div class="muted">${esc(b.attempts)} attempts</div>` : `<div class="muted">Not assessed</div>`; return `<div class="card clickable" data-skill="${skill}"><h3>${skill[0].toUpperCase() + skill.slice(1)}</h3>${score}<div class="${c.approved ? "ok" : "error"}">${c.approved} approved</div><div class="muted">${c.pending} pending · ${c.rejected} rejected</div></div>` }).join(""); app.innerHTML = `<p>Signed in as <strong>${esc(current.name)}</strong></p><div class="grid">${cards}</div><button class="secondary" id="manager">Content Manager</button><button class="secondary" id="switch">Switch learner</button><p class="muted">Learner sees approved database content only.</p>`; document.querySelectorAll("[data-skill]").forEach(x => x.onclick = () => navigate(x.dataset.skill)); document.getElementById("manager").onclick = () => navigate("manager"); document.getElementById("switch").onclick = () => { localStorage.removeItem("german_mvp_learner"); render() } } catch (e) { app.innerHTML = `<div class="error">${esc(e.message)}</div>` } }
+    async function renderManager(current) { app.innerHTML = `${back()}<h2>Content Manager</h2><p class="muted">Local-only content workflow. New material stays pending until reviewed.</p><div class="card"><h3>Generate Reading / Writing</h3><label>Skill</label><select id="genSkill"><option value="reading">Reading</option><option value="writing">Writing</option></select><label>CEFR level</label><select id="genLevel">${["A1", "A2", "B1", "B2", "C1", "C2"].map(x => `<option>${x}</option>`).join("")}</select><label>Count</label><input id="genCount" type="number" min="1" max="20" value="1"><button id="generate">Generate locally</button><div id="genStatus" class="muted"></div></div><div class="card"><h3>Listening ingestion</h3><p class="muted">Downloads real Deutsche Welle audio and creates transcript with local Whisper.</p><label>CEFR level used for review</label><select id="listenLevel">${["A1", "A2", "B1", "B2", "C1", "C2"].map(x => `<option>${x}</option>`).join("")}</select><label>Clips</label><input id="listenCount" type="number" min="1" max="20" value="1"><button id="ingestListening">Ingest listening</button><div id="listenStatus" class="muted"></div></div><div class="card"><h3>Speaking ingestion</h3><p class="muted">Uses real German Common Voice clips and sentence metadata from a downloaded dataset.</p><label>CEFR level used for review</label><select id="speakLevel">${["A1", "A2", "B1", "B2", "C1", "C2"].map(x => `<option>${x}</option>`).join("")}</select><label>Clips</label><input id="speakCount" type="number" min="1" max="20" value="1"><label>Dataset folder</label><input id="speakDir" placeholder="C:\\path\\to\\common-voice-german"><button id="ingestSpeaking">Ingest speaking</button><div id="speakStatus" class="muted"></div></div><h3>Pending review</h3><div id="pending">Loading...</div>`; wireBack(); document.getElementById("generate").onclick = async () => { const st = document.getElementById("genStatus"); st.className = "muted"; st.textContent = "Generating with local model..."; try { const d = await request("/content/admin/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ skill: document.getElementById("genSkill").value, level: document.getElementById("genLevel").value, count: Number(document.getElementById("genCount").value) }) }); st.className = "ok"; st.textContent = `Created ${d.count} pending items.`; await loadPending() } catch (e) { st.className = "error"; st.textContent = e.message } }; document.getElementById("ingestListening").onclick = async () => { const st = document.getElementById("listenStatus"); st.className = "muted"; st.textContent = "Downloading and transcribing..."; try { const d = await request("/content/admin/ingest-listening", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ level: document.getElementById("listenLevel").value, limit: Number(document.getElementById("listenCount").value) }) }); st.className = "ok"; st.textContent = `Created ${d.count} pending items.`; await loadPending() } catch (e) { st.className = "error"; st.textContent = e.message } }; document.getElementById("ingestSpeaking").onclick = async () => { const st = document.getElementById("speakStatus"), datasetDir = document.getElementById("speakDir").value.trim(); if (!datasetDir) { st.className = "error"; st.textContent = "Dataset folder is required."; return } st.className = "muted"; st.textContent = "Importing clips..."; try { const d = await request("/content/admin/ingest-speaking", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ level: document.getElementById("speakLevel").value, limit: Number(document.getElementById("speakCount").value), dataset_dir: datasetDir }) }); st.className = "ok"; st.textContent = `Created ${d.count} pending items.`; await loadPending() } catch (e) { st.className = "error"; st.textContent = e.message } }; async function loadPending() { const box = document.getElementById("pending"); try { const rows = await request("/content/admin/pending"); if (!rows.length) { box.innerHTML = `<p class="muted">No pending content.</p>`; return } box.innerHTML = rows.map(item => `<div class="review-item"><strong>ID ${item.id} · ${esc(item.skill)} · ${esc(item.level)}</strong><p>${esc(item.text_content || "")}</p>${item.audio_path ? `<audio controls src="${esc(item.audio_path.startsWith("http") ? item.audio_path : `${API}/content/admin/${item.id}/audio`)}"></audio>` : ""}<p class="muted">Source: ${esc(item.source)}</p><div class="row"><button data-approve="${item.id}">Approve</button><button class="danger" data-reject="${item.id}">Reject</button></div></div>`).join(""); box.querySelectorAll("[data-approve]").forEach(b => b.onclick = () => review(Number(b.dataset.approve), "approved")); box.querySelectorAll("[data-reject]").forEach(b => b.onclick = () => review(Number(b.dataset.reject), "rejected")) } catch (e) { box.innerHTML = `<div class="error">${esc(e.message)}</div>` } } async function review(id, decision) { try { await request(`/content/admin/${id}/review`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ decision }) }); await loadPending() } catch (e) { alert(e.message) } } loadPending() }
+    async function renderSkill(skill, current) { app.innerHTML = `${back()}<h2>${skill[0].toUpperCase() + skill.slice(1)}</h2><p class="muted">Loading...</p>`; wireBack(); try { const a = await getAvailableLevels(skill); if (!a.levels.length) { app.innerHTML = `${back()}<h2>${skill}</h2><div class="card"><p>No approved content available.</p><p class="muted">${esc(provisioning(skill))}</p><p class="muted">Approved: ${a.approved_count}. Pending review: ${a.pending_count}.</p><button id="manager">Open Content Manager</button></div>`; wireBack(); document.getElementById("manager").onclick = () => navigate("manager"); return } app.innerHTML = `${back()}<h2>${skill[0].toUpperCase() + skill.slice(1)}</h2><label>Level</label><select id="level">${a.levels.map(x => `<option>${x}</option>`).join("")}</select><button id="load">Load approved content</button><div id="work"></div><div id="status" class="muted"></div><div id="result"></div>`; wireBack(); document.getElementById("load").onclick = async () => { const st = document.getElementById("status"), work = document.getElementById("work"); st.className = "muted"; st.textContent = "Loading approved content..."; try { const c = await getContent(skill, document.getElementById("level").value); st.textContent = ""; if (skill === "writing") renderWriting(work, current, c); if (skill === "reading") renderReading(work, current, c); if (skill === "listening") renderListening(work, current, c); if (skill === "speaking") renderSpeaking(work, current, c) } catch (e) { st.className = "error"; st.textContent = e.message } } } catch (e) { app.innerHTML = `${back()}<div class="error">${esc(e.message)}</div>`; wireBack() } }
+    function renderWriting(work, current, c) { work.innerHTML = `<div class="content" id="prompt"></div><label>Your answer</label><textarea id="answer"></textarea><button class="secondary" id="dictate">Record dictation</button><div class="meter"><div class="meter-bar" id="dictateMeter"></div></div><label>Strictness</label><select id="strictness"><option value="lenient">Lenient</option><option value="standard" selected>Standard</option><option value="strict">Strict</option></select><button id="submit">Submit</button>`; document.getElementById("prompt").textContent = c.text_content; let recorder = null, chunks = [], stopMeter = null; document.getElementById("dictate").onclick = async function () { const b = this, st = document.getElementById("status"); if (recorder) { recorder.stop(); return } try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); chunks = []; recorder = new MediaRecorder(stream); recorder.ondataavailable = e => chunks.push(e.data); stopMeter = attachLevelMeter(stream, document.getElementById("dictateMeter"), () => { if (recorder && recorder.state === "recording") recorder.stop() }); recorder.onstop = async () => { stream.getTracks().forEach(t => t.stop()); if (stopMeter) { stopMeter(); stopMeter = null } recorder = null; b.textContent = "Record dictation"; st.textContent = "Transcribing locally..."; const form = new FormData(); form.append("audio_file", new Blob(chunks, { type: "audio/webm" }), "dictation.webm"); try { const d = await request("/dictate/", { method: "POST", body: form }); document.getElementById("answer").value = d.transcript; st.className = "ok"; st.textContent = "Transcript inserted." } catch (e) { st.className = "error"; st.textContent = e.message } }; recorder.start(); b.textContent = "Stop recording"; st.textContent = "Recording... (auto-stops after ~1.8s of silence)" } catch (e) { st.className = "error"; st.textContent = e.message } }; document.getElementById("submit").onclick = async function () { const st = document.getElementById("status"), res = document.getElementById("result"); this.disabled = true; st.textContent = "Grading locally..."; try { const d = await request("/writing/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ learner_id: current.id, content_item_id: c.id, text: document.getElementById("answer").value, strictness: document.getElementById("strictness").value }) }); res.innerHTML = renderResult("writing", d); st.textContent = "" } catch (e) { st.className = "error"; st.textContent = e.message } finally { this.disabled = false } } }
+    function renderReading(work, current, c) { work.innerHTML = `<div class="content" id="passage"></div><div id="questions"></div><button id="submit">Submit</button>`; document.getElementById("passage").textContent = c.text_content; document.getElementById("questions").innerHTML = c.questions.map((q, i) => `<label>${esc(q)}</label><input id="q${i}">`).join(""); document.getElementById("submit").onclick = async function () { const st = document.getElementById("status"), res = document.getElementById("result"), answers = c.questions.map((q, i) => ({ question: q, learner_answer: document.getElementById(`q${i}`).value })); this.disabled = true; st.textContent = "Grading locally..."; try { const d = await request("/reading/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ learner_id: current.id, content_item_id: c.id, answers }) }); res.innerHTML = renderResult("reading", d); st.textContent = "" } catch (e) { st.className = "error"; st.textContent = e.message } finally { this.disabled = false } } }
+    function audioSource(c) { if (!c.audio_path) return null; return c.audio_path.startsWith("http") ? c.audio_path : `${API}/content/${c.id}/audio` }
+    function renderListening(work, current, c) { const src = audioSource(c); if (!src) { work.innerHTML = `<div class="error">Approved listening item has no audio.</div>`; return } work.innerHTML = `<audio controls src="${esc(src)}"></audio><label>What did you hear?</label><textarea id="answer"></textarea><button id="submit">Submit</button>`; document.getElementById("submit").onclick = async function () { const st = document.getElementById("status"), res = document.getElementById("result"); this.disabled = true; st.textContent = "Grading locally..."; try { const d = await request("/listening/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ learner_id: current.id, content_item_id: c.id, typed_transcript: document.getElementById("answer").value }) }); res.innerHTML = renderResult("listening", d); st.textContent = "" } catch (e) { st.className = "error"; st.textContent = e.message } finally { this.disabled = false } } }
+    function renderSpeaking(work, current, c) { const src = audioSource(c); work.innerHTML = `<div class="content" id="prompt"></div>${src ? `<audio controls src="${esc(src)}"></audio>` : ""}<button id="record">Record</button><div class="meter"><div class="meter-bar" id="speakMeter"></div></div><audio id="playback" controls hidden></audio><button id="submit" disabled>Submit</button>`; document.getElementById("prompt").textContent = c.text_content; let recorder = null, chunks = [], blob = null, stopMeter = null; document.getElementById("record").onclick = async function () { const b = this, st = document.getElementById("status"); if (recorder) { recorder.stop(); return } try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); chunks = []; recorder = new MediaRecorder(stream); recorder.ondataavailable = e => chunks.push(e.data); stopMeter = attachLevelMeter(stream, document.getElementById("speakMeter"), () => { if (recorder && recorder.state === "recording") recorder.stop() }); recorder.onstop = () => { stream.getTracks().forEach(t => t.stop()); if (stopMeter) { stopMeter(); stopMeter = null } recorder = null; blob = new Blob(chunks, { type: "audio/webm" }); const p = document.getElementById("playback"); p.src = URL.createObjectURL(blob); p.hidden = false; document.getElementById("submit").disabled = false; b.textContent = "Record again"; st.textContent = "Recording ready." }; recorder.start(); b.textContent = "Stop"; st.textContent = "Recording... (auto-stops after ~1.8s of silence)" } catch (e) { st.className = "error"; st.textContent = e.message } }; document.getElementById("submit").onclick = async function () { const st = document.getElementById("status"), res = document.getElementById("result"); this.disabled = true; st.textContent = "Transcribing and aligning locally..."; try { const f = new FormData(); f.append("learner_id", current.id); f.append("content_item_id", c.id); f.append("audio_file", blob, "speaking.webm"); const d = await request("/speaking/submit", { method: "POST", body: f }); res.innerHTML = renderResult("speaking", d); st.textContent = "" } catch (e) { st.className = "error"; st.textContent = e.message } finally { this.disabled = false } } }
+    render();
+  </script>
 </body>
+
 </html>
